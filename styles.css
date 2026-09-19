@@ -336,3 +336,55 @@ textarea {
     padding: 0;
   }
 }
+
+/* Photo Upload */
+.photo-upload-area {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.photo-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.photo-preview {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  margin-top: 0.6rem;
+}
+
+/* CV Photo in preview */
+.cv-photo {
+  width: 85px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  float: right;
+  margin-left: 12px;
+  margin-bottom: 8px;
+}
+
+.cv-header.has-photo {
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cv-header.has-photo .header-text {
+  flex: 1;
+}
+
+.cv-header.has-photo h1 {
+  text-align: left;
+}
