@@ -23,6 +23,16 @@
         <!-- Personal Info -->
         <fieldset>
           <legend>Personal Information</legend>
+          
+          <div class="photo-upload-area">
+            <label>Profile Photo (optional)</label>
+            <div class="photo-controls">
+              <input type="file" id="photoInput" accept="image/*">
+              <button type="button" id="removePhoto" class="btn-secondary" style="display:none;">Remove Photo</button>
+            </div>
+            <img id="photoPreview" class="photo-preview" alt="Photo preview" style="display:none;">
+          </div>
+
           <label>Full Name
             <input type="text" id="fullName" placeholder="e.g. Amina Juma Mohamed" required>
           </label>
@@ -61,8 +71,23 @@
         <fieldset>
           <legend>Skills</legend>
           <label>Skills (comma separated)
-            <input type="text" id="skills" placeholder="Microsoft Office, Communication, Project Management, Kiswahili, English, Customer Service">
+            <input type="text" id="skills" placeholder="Microsoft Office, Communication, Project Management, Customer Service">
           </label>
+        </fieldset>
+
+        <!-- Languages -->
+        <fieldset>
+          <legend>Languages</legend>
+          <label>Languages (e.g. English - Fluent, Kiswahili - Native)
+            <input type="text" id="languages" placeholder="English - Fluent, Kiswahili - Native, French - Intermediate">
+          </label>
+        </fieldset>
+
+        <!-- Certifications -->
+        <fieldset>
+          <legend>Certifications & Training</legend>
+          <div id="certifications-container"></div>
+          <button type="button" id="add-certification" class="btn-secondary">+ Add Certification</button>
         </fieldset>
 
         <!-- References -->
@@ -74,6 +99,8 @@
 
         <div class="form-actions">
           <button type="button" id="download-pdf" class="btn-primary">Download PDF</button>
+          <button type="button" id="save-cv" class="btn-secondary">Save Draft</button>
+          <button type="button" id="load-cv" class="btn-secondary">Load Draft</button>
           <button type="button" id="toggle-premium" class="btn-secondary">Toggle Premium (Demo)</button>
         </div>
       </form>
