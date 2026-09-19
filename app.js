@@ -1,10 +1,11 @@
 // ============================================
 // East African CV & Resume Builder - app.js
+// Improvements: Photo, Languages, Certifications, LocalStorage
 // ============================================
 
 let isPremium = false;
+let photoDataUrl = null;
 
-// ---------- Entry Templates ----------
 function createExperienceEntry(data = {}) {
   return `
     <div class="entry experience-entry">
@@ -42,6 +43,23 @@ function createEducationEntry(data = {}) {
   `;
 }
 
+function createCertificationEntry(data = {}) {
+  return `
+    <div class="entry certification-entry">
+      <label>Certification / Training Name
+        <input type="text" class="cert-name" value="${escapeHtml(data.name || '')}" placeholder="e.g. Microsoft Office Specialist, VETA Certificate">
+      </label>
+      <label>Issuer / Institution
+        <input type="text" class="cert-issuer" value="${escapeHtml(data.issuer || '')}" placeholder="e.g. Microsoft, VETA, Google">
+      </label>
+      <label>Year
+        <input type="text" class="cert-year" value="${escapeHtml(data.year || '')}" placeholder="2024">
+      </label>
+      <button type="button" class="remove-entry">Remove</button>
+    </div>
+  `;
+}
+
 function createReferenceEntry(data = {}) {
   return `
     <div class="entry reference-entry">
@@ -65,12 +83,11 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// ---------- Initialize default entries ----------
 document.getElementById('experience-container').innerHTML = createExperienceEntry();
 document.getElementById('education-container').innerHTML = createEducationEntry();
+document.getElementById('certifications-container').innerHTML = createCertificationEntry();
 document.getElementById('references-container').innerHTML = createReferenceEntry();
 
-// ---------- Add buttons ----------
 document.getElementById('add-experience').addEventListener('click', () => {
   document.getElementById('experience-container').insertAdjacentHTML('beforeend', createExperienceEntry());
   updatePreview();
@@ -81,12 +98,16 @@ document.getElementById('add-education').addEventListener('click', () => {
   updatePreview();
 });
 
+document.getElementById('add-certification').addEventListener('click', () => {
+  document.getElementById('certifications-container').insertAdjacentHTML('beforeend', createCertificationEntry());
+  updatePreview();
+});
+
 document.getElementById('add-reference').addEventListener('click', () => {
   document.getElementById('references-container').insertAdjacentHTML('beforeend', createReferenceEntry());
   updatePreview();
 });
 
-// ---------- Remove entry (event delegation) ----------
 document.getElementById('cv-form').addEventListener('click', (e) => {
   if (e.target.classList.contains('remove-entry')) {
     const entry = e.target.closest('.entry');
@@ -97,7 +118,38 @@ document.getElementById('cv-form').addEventListener('click', (e) => {
   }
 });
 
-// ---------- Live Preview Update ----------
+const photoInput = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+const removePhotoBtn = document.getElementById('removePhoto');
+
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Photo is too large. Please use an image under 2MB.');
+    photoInput.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    photoDataUrl = event.target.result;
+    photoPreview.src = photoDataUrl;
+    photoPreview.style.display = 'block';
+    removePhotoBtn.style.display = 'inline-block';
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+removePhotoBtn.addEventListener('click', () => {
+  photoDataUrl = null;
+  photoPreview.src = '';
+  photoPreview.style.display = 'none';
+  removePhotoBtn.style.display = 'none';
+  photoInput.value = '';
+  updatePreview();
+});
+
 function updatePreview() {
   const name = document.getElementById('fullName').value.trim() || 'Your Full Name';
   const email = document.getElementById('email').value.trim();
@@ -106,8 +158,8 @@ function updatePreview() {
   const linkedin = document.getElementById('linkedin').value.trim();
   const summary = document.getElementById('summary').value.trim();
   const skills = document.getElementById('skills').value.trim();
+  const languages = document.getElementById('languages').value.trim();
 
-  // Collect experiences
   const experiences = Array.from(document.querySelectorAll('.experience-entry')).map(entry => ({
     title: entry.querySelector('.job-title')?.value.trim() || '',
     company: entry.querySelector('.company')?.value.trim() || '',
@@ -115,30 +167,48 @@ function updatePreview() {
     desc: entry.querySelector('.description')?.value.trim() || ''
   })).filter(e => e.title || e.company);
 
-  // Collect education
   const education = Array.from(document.querySelectorAll('.education-entry')).map(entry => ({
     degree: entry.querySelector('.degree')?.value.trim() || '',
     institution: entry.querySelector('.institution')?.value.trim() || '',
     years: entry.querySelector('.years')?.value.trim() || ''
   })).filter(e => e.degree || e.institution);
 
-  // Collect references
+  const certifications = Array.from(document.querySelectorAll('.certification-entry')).map(entry => ({
+    name: entry.querySelector('.cert-name')?.value.trim() || '',
+    issuer: entry.querySelector('.cert-issuer')?.value.trim() || '',
+    year: entry.querySelector('.cert-year')?.value.trim() || ''
+  })).filter(c => c.name);
+
   const references = Array.from(document.querySelectorAll('.reference-entry')).map(entry => ({
     name: entry.querySelector('.ref-name')?.value.trim() || '',
     position: entry.querySelector('.ref-position')?.value.trim() || '',
     contact: entry.querySelector('.ref-contact')?.value.trim() || ''
   })).filter(r => r.name);
 
-  // Build contact line
   const contactParts = [email, phone, location, linkedin].filter(Boolean);
   const contactLine = contactParts.join('  •  ');
 
-  let html = `
-    <header class="cv-header">
-      <h1>${escapeHtml(name)}</h1>
-      ${contactLine ? `<p class="contact">${escapeHtml(contactLine)}</p>` : ''}
-    </header>
-  `;
+  let headerHtml = '';
+  if (photoDataUrl) {
+    headerHtml = `
+      <header class="cv-header has-photo">
+        <div class="header-text">
+          <h1>${escapeHtml(name)}</h1>
+          ${contactLine ? `<p class="contact">${escapeHtml(contactLine)}</p>` : ''}
+        </div>
+        <img src="${photoDataUrl}" class="cv-photo" alt="Profile photo">
+      </header>
+    `;
+  } else {
+    headerHtml = `
+      <header class="cv-header">
+        <h1>${escapeHtml(name)}</h1>
+        ${contactLine ? `<p class="contact">${escapeHtml(contactLine)}</p>` : ''}
+      </header>
+    `;
+  }
+
+  let html = headerHtml;
 
   if (summary) {
     html += `
@@ -185,6 +255,28 @@ function updatePreview() {
     `;
   }
 
+  if (languages) {
+    html += `
+      <section class="cv-section">
+        <h2>Languages</h2>
+        <p class="skills-list">${escapeHtml(languages)}</p>
+      </section>
+    `;
+  }
+
+  if (certifications.length > 0) {
+    html += `<section class="cv-section"><h2>Certifications & Training</h2>`;
+    certifications.forEach(cert => {
+      html += `
+        <div class="edu">
+          <h3>${escapeHtml(cert.name)}${cert.issuer ? ` — ${escapeHtml(cert.issuer)}` : ''}</h3>
+          ${cert.year ? `<p class="dates">${escapeHtml(cert.year)}</p>` : ''}
+        </div>
+      `;
+    });
+    html += `</section>`;
+  }
+
   if (references.length > 0) {
     html += `<section class="cv-section"><h2>References</h2>`;
     references.forEach(ref => {
@@ -198,63 +290,143 @@ function updatePreview() {
     html += `</section>`;
   }
 
-  // Inject content while preserving the watermark element
   const preview = document.getElementById('cv-preview');
   const watermark = document.getElementById('watermark');
-
   preview.innerHTML = html;
-  if (watermark) {
-    preview.appendChild(watermark);
-  }
-
-  // Re-apply premium state
+  if (watermark) preview.appendChild(watermark);
   updatePremiumUI();
 }
 
-// ---------- Monetization: Premium Toggle ----------
+function collectFormData() {
+  return {
+    fullName: document.getElementById('fullName').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    location: document.getElementById('location').value,
+    linkedin: document.getElementById('linkedin').value,
+    summary: document.getElementById('summary').value,
+    skills: document.getElementById('skills').value,
+    languages: document.getElementById('languages').value,
+    photoDataUrl: photoDataUrl,
+    experiences: Array.from(document.querySelectorAll('.experience-entry')).map(entry => ({
+      title: entry.querySelector('.job-title')?.value || '',
+      company: entry.querySelector('.company')?.value || '',
+      dates: entry.querySelector('.dates')?.value || '',
+      desc: entry.querySelector('.description')?.value || ''
+    })),
+    education: Array.from(document.querySelectorAll('.education-entry')).map(entry => ({
+      degree: entry.querySelector('.degree')?.value || '',
+      institution: entry.querySelector('.institution')?.value || '',
+      years: entry.querySelector('.years')?.value || ''
+    })),
+    certifications: Array.from(document.querySelectorAll('.certification-entry')).map(entry => ({
+      name: entry.querySelector('.cert-name')?.value || '',
+      issuer: entry.querySelector('.cert-issuer')?.value || '',
+      year: entry.querySelector('.cert-year')?.value || ''
+    })),
+    references: Array.from(document.querySelectorAll('.reference-entry')).map(entry => ({
+      name: entry.querySelector('.ref-name')?.value || '',
+      position: entry.querySelector('.ref-position')?.value || '',
+      contact: entry.querySelector('.ref-contact')?.value || ''
+    })),
+    isPremium: isPremium
+  };
+}
+
+function loadFormData(data) {
+  if (!data) return;
+  document.getElementById('fullName').value = data.fullName || '';
+  document.getElementById('email').value = data.email || '';
+  document.getElementById('phone').value = data.phone || '';
+  document.getElementById('location').value = data.location || '';
+  document.getElementById('linkedin').value = data.linkedin || '';
+  document.getElementById('summary').value = data.summary || '';
+  document.getElementById('skills').value = data.skills || '';
+  document.getElementById('languages').value = data.languages || '';
+
+  if (data.photoDataUrl) {
+    photoDataUrl = data.photoDataUrl;
+    photoPreview.src = photoDataUrl;
+    photoPreview.style.display = 'block';
+    removePhotoBtn.style.display = 'inline-block';
+  } else {
+    photoDataUrl = null;
+    photoPreview.style.display = 'none';
+    removePhotoBtn.style.display = 'none';
+  }
+
+  const expContainer = document.getElementById('experience-container');
+  expContainer.innerHTML = '';
+  (data.experiences || [{}]).forEach(exp => expContainer.insertAdjacentHTML('beforeend', createExperienceEntry(exp)));
+
+  const eduContainer = document.getElementById('education-container');
+  eduContainer.innerHTML = '';
+  (data.education || [{}]).forEach(edu => eduContainer.insertAdjacentHTML('beforeend', createEducationEntry(edu)));
+
+  const certContainer = document.getElementById('certifications-container');
+  certContainer.innerHTML = '';
+  (data.certifications || [{}]).forEach(cert => certContainer.insertAdjacentHTML('beforeend', createCertificationEntry(cert)));
+
+  const refContainer = document.getElementById('references-container');
+  refContainer.innerHTML = '';
+  (data.references || [{}]).forEach(ref => refContainer.insertAdjacentHTML('beforeend', createReferenceEntry(ref)));
+
+  isPremium = data.isPremium || false;
+  updatePremiumUI();
+  updatePreview();
+}
+
+document.getElementById('save-cv').addEventListener('click', () => {
+  try {
+    localStorage.setItem('eastAfricanCV_draft', JSON.stringify(collectFormData()));
+    alert('CV draft saved successfully! You can load it later.');
+  } catch (err) {
+    alert('Could not save. Storage may be full (photo too large). Try removing the photo.');
+  }
+});
+
+document.getElementById('load-cv').addEventListener('click', () => {
+  const saved = localStorage.getItem('eastAfricanCV_draft');
+  if (!saved) {
+    alert('No saved draft found.');
+    return;
+  }
+  try {
+    loadFormData(JSON.parse(saved));
+    alert('Draft loaded successfully!');
+  } catch (err) {
+    alert('Failed to load draft.');
+  }
+});
+
 function updatePremiumUI() {
   const watermark = document.getElementById('watermark');
   if (!watermark) return;
-
-  if (isPremium) {
-    watermark.classList.add('hidden');
-  } else {
-    watermark.classList.remove('hidden');
-  }
+  if (isPremium) watermark.classList.add('hidden');
+  else watermark.classList.remove('hidden');
 }
 
 document.getElementById('toggle-premium').addEventListener('click', () => {
   isPremium = !isPremium;
   updatePremiumUI();
-  const btn = document.getElementById('toggle-premium');
-  btn.textContent = isPremium ? 'Premium Active (Demo)' : 'Toggle Premium (Demo)';
+  document.getElementById('toggle-premium').textContent = isPremium ? 'Premium Active (Demo)' : 'Toggle Premium (Demo)';
 });
 
-// ---------- PDF Download ----------
 document.getElementById('download-pdf').addEventListener('click', () => {
   const element = document.getElementById('cv-preview');
   const name = document.getElementById('fullName').value.trim() || 'My_CV';
   const safeName = name.replace(/[^a-z0-9]/gi, '_').substring(0, 40);
-
   const opt = {
-    margin:       [8, 8, 8, 8],
-    filename:     `${safeName}_East_African_CV.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { 
-      scale: 2, 
-      useCORS: true, 
-      logging: false,
-      letterRendering: true
-    },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin: [8, 8, 8, 8],
+    filename: `${safeName}_East_African_CV.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
-
-  // Show loading state
   const btn = document.getElementById('download-pdf');
   const originalText = btn.textContent;
   btn.textContent = 'Generating PDF...';
   btn.disabled = true;
-
   html2pdf().set(opt).from(element).save().then(() => {
     btn.textContent = originalText;
     btn.disabled = false;
@@ -265,9 +437,6 @@ document.getElementById('download-pdf').addEventListener('click', () => {
   });
 });
 
-// ---------- Live updates ----------
 document.getElementById('cv-form').addEventListener('input', updatePreview);
 document.getElementById('cv-form').addEventListener('change', updatePreview);
-
-// Initial render
 updatePreview();
