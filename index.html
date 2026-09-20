@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>East African CV & Resume Builder</title>
-  <meta name="description" content="Free professional CV and Resume builder designed for job seekers in Tanzania, Kenya and East Africa. Download high-quality PDF instantly.">
+  <meta name="description" content="Free professional CV and Resume builder for job seekers in Tanzania, Kenya and East Africa. Live preview, PDF download, templates & cover letter.">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -17,13 +17,30 @@
   </header>
 
   <main class="app-container">
-    <!-- LEFT: Form -->
     <section class="form-section">
       <form id="cv-form">
-        <!-- Personal Info -->
+
+        <fieldset>
+          <legend>CV Template</legend>
+          <div class="template-selector">
+            <label class="template-option">
+              <input type="radio" name="template" value="classic" checked>
+              <span>Classic</span>
+            </label>
+            <label class="template-option premium-only">
+              <input type="radio" name="template" value="modern" disabled>
+              <span>Modern 🔒</span>
+            </label>
+            <label class="template-option premium-only">
+              <input type="radio" name="template" value="minimal" disabled>
+              <span>Minimal 🔒</span>
+            </label>
+          </div>
+          <p class="hint" id="template-hint">Unlock Modern & Minimal with Premium</p>
+        </fieldset>
+
         <fieldset>
           <legend>Personal Information</legend>
-          
           <div class="photo-upload-area">
             <label>Profile Photo (optional)</label>
             <div class="photo-controls">
@@ -32,7 +49,6 @@
             </div>
             <img id="photoPreview" class="photo-preview" alt="Photo preview" style="display:none;">
           </div>
-
           <label>Full Name
             <input type="text" id="fullName" placeholder="e.g. Amina Juma Mohamed" required>
           </label>
@@ -53,21 +69,18 @@
           </label>
         </fieldset>
 
-        <!-- Work Experience -->
         <fieldset>
           <legend>Work Experience</legend>
           <div id="experience-container"></div>
           <button type="button" id="add-experience" class="btn-secondary">+ Add Experience</button>
         </fieldset>
 
-        <!-- Education -->
         <fieldset>
           <legend>Education</legend>
           <div id="education-container"></div>
           <button type="button" id="add-education" class="btn-secondary">+ Add Education</button>
         </fieldset>
 
-        <!-- Skills -->
         <fieldset>
           <legend>Skills</legend>
           <label>Skills (comma separated)
@@ -75,7 +88,6 @@
           </label>
         </fieldset>
 
-        <!-- Languages -->
         <fieldset>
           <legend>Languages</legend>
           <label>Languages (e.g. English - Fluent, Kiswahili - Native)
@@ -83,22 +95,34 @@
           </label>
         </fieldset>
 
-        <!-- Certifications -->
         <fieldset>
           <legend>Certifications & Training</legend>
           <div id="certifications-container"></div>
           <button type="button" id="add-certification" class="btn-secondary">+ Add Certification</button>
         </fieldset>
 
-        <!-- References -->
         <fieldset>
           <legend>References</legend>
           <div id="references-container"></div>
           <button type="button" id="add-reference" class="btn-secondary">+ Add Reference</button>
         </fieldset>
 
+        <fieldset id="cover-letter-section" class="premium-feature" style="display:none;">
+          <legend>Cover Letter Builder (Premium)</legend>
+          <label>Job Title / Position Applying For
+            <input type="text" id="coverJobTitle" placeholder="e.g. Sales Executive">
+          </label>
+          <label>Company Name
+            <input type="text" id="coverCompany" placeholder="e.g. CRDB Bank">
+          </label>
+          <label>Cover Letter Content
+            <textarea id="coverContent" rows="8" placeholder="Write or paste your cover letter here..."></textarea>
+          </label>
+          <button type="button" id="download-cover" class="btn-primary">Download Cover Letter PDF</button>
+        </fieldset>
+
         <div class="form-actions">
-          <button type="button" id="download-pdf" class="btn-primary">Download PDF</button>
+          <button type="button" id="download-pdf" class="btn-primary">Download CV PDF</button>
           <button type="button" id="save-cv" class="btn-secondary">Save Draft</button>
           <button type="button" id="load-cv" class="btn-secondary">Load Draft</button>
           <button type="button" id="toggle-premium" class="btn-secondary">Toggle Premium (Demo)</button>
@@ -106,11 +130,9 @@
       </form>
     </section>
 
-    <!-- RIGHT: Live Preview -->
     <section class="preview-section">
       <div class="preview-wrapper">
-        <div id="cv-preview" class="cv-document">
-          <!-- Content injected by JavaScript -->
+        <div id="cv-preview" class="cv-document template-classic">
           <div class="watermark" id="watermark">Generated via East African CV Builder</div>
         </div>
       </div>
@@ -118,7 +140,7 @@
   </main>
 
   <footer class="app-footer">
-    <p>Built for East African job seekers • Free tier includes subtle watermark • Premium removes watermark + unlocks templates</p>
+    <p>Built for East African job seekers • Free: Classic template + watermark • Premium: Modern/Minimal templates + Cover Letter + no watermark</p>
   </footer>
 
   <script src="app.js"></script>
