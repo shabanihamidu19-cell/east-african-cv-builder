@@ -1,10 +1,12 @@
 // ============================================
 // East African CV & Resume Builder - app.js
-// Improvements: Photo, Languages, Certifications, LocalStorage
+// Full version: Photo, Languages, Certs, LocalStorage,
+// 3 Templates, Cover Letter, Premium
 // ============================================
 
 let isPremium = false;
 let photoDataUrl = null;
+let currentTemplate = 'classic';
 
 function createExperienceEntry(data = {}) {
   return `
@@ -92,17 +94,14 @@ document.getElementById('add-experience').addEventListener('click', () => {
   document.getElementById('experience-container').insertAdjacentHTML('beforeend', createExperienceEntry());
   updatePreview();
 });
-
 document.getElementById('add-education').addEventListener('click', () => {
   document.getElementById('education-container').insertAdjacentHTML('beforeend', createEducationEntry());
   updatePreview();
 });
-
 document.getElementById('add-certification').addEventListener('click', () => {
   document.getElementById('certifications-container').insertAdjacentHTML('beforeend', createCertificationEntry());
   updatePreview();
 });
-
 document.getElementById('add-reference').addEventListener('click', () => {
   document.getElementById('references-container').insertAdjacentHTML('beforeend', createReferenceEntry());
   updatePreview();
@@ -111,10 +110,7 @@ document.getElementById('add-reference').addEventListener('click', () => {
 document.getElementById('cv-form').addEventListener('click', (e) => {
   if (e.target.classList.contains('remove-entry')) {
     const entry = e.target.closest('.entry');
-    if (entry) {
-      entry.remove();
-      updatePreview();
-    }
+    if (entry) { entry.remove(); updatePreview(); }
   }
 });
 
@@ -149,6 +145,20 @@ removePhotoBtn.addEventListener('click', () => {
   photoInput.value = '';
   updatePreview();
 });
+
+document.querySelectorAll('input[name="template"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    currentTemplate = e.target.value;
+    applyTemplate();
+    updatePreview();
+  });
+});
+
+function applyTemplate() {
+  const preview = document.getElementById('cv-preview');
+  preview.classList.remove('template-classic', 'template-modern', 'template-minimal');
+  preview.classList.add('template-' + currentTemplate);
+}
 
 function updatePreview() {
   const name = document.getElementById('fullName').value.trim() || 'Your Full Name';
@@ -197,38 +207,23 @@ function updatePreview() {
           ${contactLine ? `<p class="contact">${escapeHtml(contactLine)}</p>` : ''}
         </div>
         <img src="${photoDataUrl}" class="cv-photo" alt="Profile photo">
-      </header>
-    `;
+      </header>`;
   } else {
     headerHtml = `
       <header class="cv-header">
         <h1>${escapeHtml(name)}</h1>
         ${contactLine ? `<p class="contact">${escapeHtml(contactLine)}</p>` : ''}
-      </header>
-    `;
+      </header>`;
   }
 
   let html = headerHtml;
 
-  if (summary) {
-    html += `
-      <section class="cv-section">
-        <h2>Professional Summary</h2>
-        <p>${escapeHtml(summary)}</p>
-      </section>
-    `;
-  }
+  if (summary) html += `<section class="cv-section"><h2>Professional Summary</h2><p>${escapeHtml(summary)}</p></section>`;
 
   if (experiences.length > 0) {
     html += `<section class="cv-section"><h2>Work Experience</h2>`;
     experiences.forEach(exp => {
-      html += `
-        <div class="job">
-          <h3>${escapeHtml(exp.title)}${exp.company ? ` — ${escapeHtml(exp.company)}` : ''}</h3>
-          ${exp.dates ? `<p class="dates">${escapeHtml(exp.dates)}</p>` : ''}
-          ${exp.desc ? `<p>${escapeHtml(exp.desc)}</p>` : ''}
-        </div>
-      `;
+      html += `<div class="job"><h3>${escapeHtml(exp.title)}${exp.company ? ` — ${escapeHtml(exp.company)}` : ''}</h3>${exp.dates ? `<p class="dates">${escapeHtml(exp.dates)}</p>` : ''}${exp.desc ? `<p>${escapeHtml(exp.desc)}</p>` : ''}</div>`;
     });
     html += `</section>`;
   }
@@ -236,43 +231,18 @@ function updatePreview() {
   if (education.length > 0) {
     html += `<section class="cv-section"><h2>Education</h2>`;
     education.forEach(edu => {
-      html += `
-        <div class="edu">
-          <h3>${escapeHtml(edu.degree)}${edu.institution ? ` — ${escapeHtml(edu.institution)}` : ''}</h3>
-          ${edu.years ? `<p class="dates">${escapeHtml(edu.years)}</p>` : ''}
-        </div>
-      `;
+      html += `<div class="edu"><h3>${escapeHtml(edu.degree)}${edu.institution ? ` — ${escapeHtml(edu.institution)}` : ''}</h3>${edu.years ? `<p class="dates">${escapeHtml(edu.years)}</p>` : ''}</div>`;
     });
     html += `</section>`;
   }
 
-  if (skills) {
-    html += `
-      <section class="cv-section">
-        <h2>Skills</h2>
-        <p class="skills-list">${escapeHtml(skills)}</p>
-      </section>
-    `;
-  }
-
-  if (languages) {
-    html += `
-      <section class="cv-section">
-        <h2>Languages</h2>
-        <p class="skills-list">${escapeHtml(languages)}</p>
-      </section>
-    `;
-  }
+  if (skills) html += `<section class="cv-section"><h2>Skills</h2><p class="skills-list">${escapeHtml(skills)}</p></section>`;
+  if (languages) html += `<section class="cv-section"><h2>Languages</h2><p class="skills-list">${escapeHtml(languages)}</p></section>`;
 
   if (certifications.length > 0) {
     html += `<section class="cv-section"><h2>Certifications & Training</h2>`;
     certifications.forEach(cert => {
-      html += `
-        <div class="edu">
-          <h3>${escapeHtml(cert.name)}${cert.issuer ? ` — ${escapeHtml(cert.issuer)}` : ''}</h3>
-          ${cert.year ? `<p class="dates">${escapeHtml(cert.year)}</p>` : ''}
-        </div>
-      `;
+      html += `<div class="edu"><h3>${escapeHtml(cert.name)}${cert.issuer ? ` — ${escapeHtml(cert.issuer)}` : ''}</h3>${cert.year ? `<p class="dates">${escapeHtml(cert.year)}</p>` : ''}</div>`;
     });
     html += `</section>`;
   }
@@ -280,12 +250,7 @@ function updatePreview() {
   if (references.length > 0) {
     html += `<section class="cv-section"><h2>References</h2>`;
     references.forEach(ref => {
-      html += `
-        <div class="ref">
-          <p><strong>${escapeHtml(ref.name)}</strong>${ref.position ? ` — ${escapeHtml(ref.position)}` : ''}</p>
-          ${ref.contact ? `<p>${escapeHtml(ref.contact)}</p>` : ''}
-        </div>
-      `;
+      html += `<div class="ref"><p><strong>${escapeHtml(ref.name)}</strong>${ref.position ? ` — ${escapeHtml(ref.position)}` : ''}</p>${ref.contact ? `<p>${escapeHtml(ref.contact)}</p>` : ''}</div>`;
     });
     html += `</section>`;
   }
@@ -294,6 +259,7 @@ function updatePreview() {
   const watermark = document.getElementById('watermark');
   preview.innerHTML = html;
   if (watermark) preview.appendChild(watermark);
+  applyTemplate();
   updatePremiumUI();
 }
 
@@ -329,7 +295,11 @@ function collectFormData() {
       position: entry.querySelector('.ref-position')?.value || '',
       contact: entry.querySelector('.ref-contact')?.value || ''
     })),
-    isPremium: isPremium
+    isPremium: isPremium,
+    currentTemplate: currentTemplate,
+    coverJobTitle: document.getElementById('coverJobTitle')?.value || '',
+    coverCompany: document.getElementById('coverCompany')?.value || '',
+    coverContent: document.getElementById('coverContent')?.value || ''
   };
 }
 
@@ -371,7 +341,14 @@ function loadFormData(data) {
   refContainer.innerHTML = '';
   (data.references || [{}]).forEach(ref => refContainer.insertAdjacentHTML('beforeend', createReferenceEntry(ref)));
 
+  if (data.coverJobTitle) document.getElementById('coverJobTitle').value = data.coverJobTitle;
+  if (data.coverCompany) document.getElementById('coverCompany').value = data.coverCompany;
+  if (data.coverContent) document.getElementById('coverContent').value = data.coverContent;
+
   isPremium = data.isPremium || false;
+  currentTemplate = data.currentTemplate || 'classic';
+  const radio = document.querySelector(`input[name="template"][value="${currentTemplate}"]`);
+  if (radio) radio.checked = true;
   updatePremiumUI();
   updatePreview();
 }
@@ -379,37 +356,54 @@ function loadFormData(data) {
 document.getElementById('save-cv').addEventListener('click', () => {
   try {
     localStorage.setItem('eastAfricanCV_draft', JSON.stringify(collectFormData()));
-    alert('CV draft saved successfully! You can load it later.');
+    alert('CV draft saved successfully!');
   } catch (err) {
-    alert('Could not save. Storage may be full (photo too large). Try removing the photo.');
+    alert('Could not save. Try removing the photo (storage limit).');
   }
 });
 
 document.getElementById('load-cv').addEventListener('click', () => {
   const saved = localStorage.getItem('eastAfricanCV_draft');
-  if (!saved) {
-    alert('No saved draft found.');
-    return;
-  }
+  if (!saved) { alert('No saved draft found.'); return; }
   try {
     loadFormData(JSON.parse(saved));
     alert('Draft loaded successfully!');
-  } catch (err) {
-    alert('Failed to load draft.');
-  }
+  } catch (err) { alert('Failed to load draft.'); }
 });
 
 function updatePremiumUI() {
   const watermark = document.getElementById('watermark');
-  if (!watermark) return;
-  if (isPremium) watermark.classList.add('hidden');
-  else watermark.classList.remove('hidden');
+  if (watermark) {
+    if (isPremium) watermark.classList.add('hidden');
+    else watermark.classList.remove('hidden');
+  }
+
+  document.querySelectorAll('.premium-only input').forEach(input => {
+    input.disabled = !isPremium;
+  });
+  document.querySelectorAll('.premium-only span').forEach(span => {
+    span.textContent = span.textContent.replace(' 🔒', isPremium ? '' : ' 🔒');
+  });
+
+  const coverSection = document.getElementById('cover-letter-section');
+  if (coverSection) coverSection.style.display = isPremium ? 'block' : 'none';
+
+  const hint = document.getElementById('template-hint');
+  if (hint) hint.textContent = isPremium ? 'All templates unlocked' : 'Unlock Modern & Minimal with Premium';
+
+  if (!isPremium && currentTemplate !== 'classic') {
+    currentTemplate = 'classic';
+    const classicRadio = document.querySelector('input[name="template"][value="classic"]');
+    if (classicRadio) classicRadio.checked = true;
+    applyTemplate();
+  }
 }
 
 document.getElementById('toggle-premium').addEventListener('click', () => {
   isPremium = !isPremium;
   updatePremiumUI();
-  document.getElementById('toggle-premium').textContent = isPremium ? 'Premium Active (Demo)' : 'Toggle Premium (Demo)';
+  document.getElementById('toggle-premium').textContent = isPremium ? 'Premium Active ✓' : 'Toggle Premium (Demo)';
+  updatePreview();
 });
 
 document.getElementById('download-pdf').addEventListener('click', () => {
@@ -437,6 +431,41 @@ document.getElementById('download-pdf').addEventListener('click', () => {
   });
 });
 
+document.getElementById('download-cover')?.addEventListener('click', () => {
+  const name = document.getElementById('fullName').value.trim() || 'Applicant';
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const jobTitle = document.getElementById('coverJobTitle').value.trim() || 'Position';
+  const company = document.getElementById('coverCompany').value.trim() || 'Company';
+  const content = document.getElementById('coverContent').value.trim() || 'Dear Hiring Manager,\n\nI am writing to express my interest...';
+
+  const coverEl = document.createElement('div');
+  coverEl.style.cssText = 'padding: 20mm; font-family: system-ui, sans-serif; font-size: 11pt; line-height: 1.5; color: #222; max-width: 210mm;';
+  coverEl.innerHTML = `
+    <div style="margin-bottom: 20px;"><strong>${escapeHtml(name)}</strong><br>
+      ${email ? escapeHtml(email) + '<br>' : ''}${phone ? escapeHtml(phone) + '<br>' : ''}${location ? escapeHtml(location) : ''}</div>
+    <div style="margin-bottom: 20px;">${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+    <div style="margin-bottom: 20px;">Hiring Manager<br>${escapeHtml(company)}</div>
+    <div style="margin-bottom: 16px;"><strong>Re: Application for ${escapeHtml(jobTitle)}</strong></div>
+    <div style="white-space: pre-wrap;">${escapeHtml(content)}</div>
+    <div style="margin-top: 30px;">Yours sincerely,<br><br>${escapeHtml(name)}</div>`;
+
+  document.body.appendChild(coverEl);
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: `${name.replace(/[^a-z0-9]/gi, '_')}_Cover_Letter.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(coverEl).save().then(() => document.body.removeChild(coverEl))
+    .catch(() => { document.body.removeChild(coverEl); alert('Cover letter PDF failed.'); });
+});
+
 document.getElementById('cv-form').addEventListener('input', updatePreview);
 document.getElementById('cv-form').addEventListener('change', updatePreview);
+
+applyTemplate();
 updatePreview();
+updatePremiumUI();
