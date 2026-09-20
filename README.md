@@ -6,34 +6,42 @@ Built with pure **HTML5 + CSS3 + Vanilla JavaScript**. No frameworks. Works offl
 
 ## Features
 
-- Interactive form for Personal Info, Work Experience, Education, Skills & References
+### Free Tier
+- Interactive form (Personal Info, Work Experience, Education, Skills, Languages, Certifications, References)
 - **Live side-by-side preview** that updates as you type
-- High-quality **PDF download** using `html2pdf.js`
-- Free tier with subtle watermark
-- Premium toggle (demo) that removes the watermark
-- Fully responsive (mobile-friendly)
-- Semantic and clean code
+- Profile photo upload (optional)
+- High-quality **PDF download** (A4)
+- Classic template
+- Save / Load draft (LocalStorage)
+- Subtle watermark
+
+### Premium Tier (Demo Toggle)
+- Removes watermark
+- Unlocks **Modern** and **Minimal** templates
+- **Cover Letter Builder** + PDF download
 
 ## How to Use
 
 1. Open `index.html` in any modern browser
-2. Fill in your details on the left
-3. Watch the live preview update on the right
-4. Click **Download PDF** to get your professional CV
+2. Choose a template (Classic free, others Premium)
+3. Fill in your details on the left
+4. Watch the live preview update on the right
+5. Click **Download CV PDF** or **Download Cover Letter PDF**
+6. Use **Save Draft** / **Load Draft** to keep your work
 
-## Live Demo
+## Live Demo / Hosting
 
-You can host this for free on:
+Host free on:
 - GitHub Pages
 - Netlify
 - Vercel
 - Any static hosting
 
-## Monetization Ideas
+## Monetization
 
-- Free tier → watermark stays
-- Premium → remove watermark + unlock extra templates + Cover Letter builder
-- Integrate M-Pesa / Tigo Pesa / AzamPay for payments
+- Free → Classic + watermark
+- Premium (e.g. TZS 3,000–5,000) → All templates + Cover Letter + no watermark
+- Future: Integrate M-Pesa / Tigo Pesa / AzamPay / Flutterwave
 
 ## Tech Stack
 
@@ -45,7 +53,5 @@ You can host this for free on:
 ## Author
 
 Built with ❤️ for East African job seekers.
-
----
 
 **KidCoder Tz** • Tanzania
