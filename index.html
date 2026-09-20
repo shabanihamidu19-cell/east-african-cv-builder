@@ -21,23 +21,50 @@
     <section class="form-section">
       <form id="cv-form">
 
+        <div class="tools-bar">
+          <button type="button" id="btn-ats" class="btn-tool">ATS Score</button>
+          <button type="button" id="btn-tailor" class="btn-tool">Job Tailor</button>
+          <button type="button" id="btn-examples" class="btn-tool">Examples</button>
+          <button type="button" id="btn-whatsapp" class="btn-tool">Share WhatsApp</button>
+        </div>
+
+        <div id="ats-panel" class="smart-panel" style="display:none;">
+          <h3>ATS Readiness Score</h3>
+          <div class="ats-score-circle"><span id="ats-score-num">0</span><small>/100</small></div>
+          <ul id="ats-tips" class="ats-tips"></ul>
+          <button type="button" class="btn-secondary close-panel">Close</button>
+        </div>
+
+        <div id="tailor-panel" class="smart-panel" style="display:none;">
+          <h3>Job Tailoring</h3>
+          <p class="hint">Paste a job description. We'll show matching keywords from your CV.</p>
+          <textarea id="job-description" rows="5" placeholder="Paste the job advert / description here..."></textarea>
+          <button type="button" id="run-tailor" class="btn-primary">Analyze Match</button>
+          <div id="tailor-results" style="display:none; margin-top:0.75rem;"></div>
+          <button type="button" class="btn-secondary close-panel">Close</button>
+        </div>
+
+        <div id="examples-panel" class="smart-panel" style="display:none;">
+          <h3>Load Example CV</h3>
+          <p class="hint">Fill the form with a sample profile (you can edit after).</p>
+          <div class="example-btns">
+            <button type="button" class="btn-secondary load-example" data-example="graduate">Fresh Graduate</button>
+            <button type="button" class="btn-secondary load-example" data-example="experienced">Experienced Pro</button>
+            <button type="button" class="btn-secondary load-example" data-example="bank">Banking / Finance</button>
+            <button type="button" class="btn-secondary load-example" data-example="teacher">Teacher / Education</button>
+          </div>
+          <button type="button" class="btn-secondary close-panel">Close</button>
+        </div>
+
         <fieldset>
           <legend>CV Template</legend>
           <div class="template-selector">
-            <label class="template-option">
-              <input type="radio" name="template" value="classic" checked>
-              <span>Classic</span>
-            </label>
-            <label class="template-option premium-only">
-              <input type="radio" name="template" value="modern" disabled>
-              <span>Modern 🔒</span>
-            </label>
-            <label class="template-option premium-only">
-              <input type="radio" name="template" value="minimal" disabled>
-              <span>Minimal 🔒</span>
-            </label>
+            <label class="template-option"><input type="radio" name="template" value="classic" checked><span>Classic</span></label>
+            <label class="template-option"><input type="radio" name="template" value="modern"><span>Modern</span></label>
+            <label class="template-option"><input type="radio" name="template" value="minimal"><span>Minimal</span></label>
+            <label class="template-option"><input type="radio" name="template" value="professional"><span>Professional</span></label>
+            <label class="template-option"><input type="radio" name="template" value="executive"><span>Executive</span></label>
           </div>
-          <p class="hint" id="template-hint">Unlock Modern & Minimal with Premium</p>
         </fieldset>
 
         <fieldset>
@@ -50,24 +77,13 @@
             </div>
             <img id="photoPreview" class="photo-preview" alt="Photo preview" style="display:none;">
           </div>
-          <label>Full Name
-            <input type="text" id="fullName" placeholder="e.g. Amina Juma Mohamed" required>
-          </label>
-          <label>Email
-            <input type="email" id="email" placeholder="amina@example.com">
-          </label>
-          <label>Phone
-            <input type="tel" id="phone" placeholder="+255 7XX XXX XXX">
-          </label>
-          <label>Location
-            <input type="text" id="location" placeholder="Dar es Salaam, Tanzania">
-          </label>
-          <label>LinkedIn / Portfolio (optional)
-            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/...">
-          </label>
-          <label>Professional Summary
-            <textarea id="summary" rows="4" placeholder="2–4 sentences about your background, skills and career goals..."></textarea>
-          </label>
+          <label>Full Name<input type="text" id="fullName" placeholder="e.g. Amina Juma Mohamed" required></label>
+          <label>Email<input type="email" id="email" placeholder="amina@example.com"></label>
+          <label>Phone<input type="tel" id="phone" placeholder="+255 7XX XXX XXX"></label>
+          <label>Location<input type="text" id="location" placeholder="Dar es Salaam, Tanzania"></label>
+          <label>LinkedIn / Portfolio (optional)<input type="url" id="linkedin" placeholder="https://linkedin.com/in/..."></label>
+          <label>Professional Summary<textarea id="summary" rows="4" placeholder="2–4 sentences about your background..."></textarea></label>
+          <button type="button" id="suggest-summary" class="btn-secondary btn-sm">💡 Suggest better summary</button>
         </fieldset>
 
         <fieldset>
@@ -84,16 +100,12 @@
 
         <fieldset>
           <legend>Skills</legend>
-          <label>Skills (comma separated)
-            <input type="text" id="skills" placeholder="Microsoft Office, Communication, Project Management, Customer Service">
-          </label>
+          <label>Skills (comma separated)<input type="text" id="skills" placeholder="Microsoft Office, Communication, Project Management"></label>
         </fieldset>
 
         <fieldset>
           <legend>Languages</legend>
-          <label>Languages (e.g. English - Fluent, Kiswahili - Native)
-            <input type="text" id="languages" placeholder="English - Fluent, Kiswahili - Native, French - Intermediate">
-          </label>
+          <label>Languages<input type="text" id="languages" placeholder="English - Fluent, Kiswahili - Native"></label>
         </fieldset>
 
         <fieldset>
@@ -108,17 +120,12 @@
           <button type="button" id="add-reference" class="btn-secondary">+ Add Reference</button>
         </fieldset>
 
-        <fieldset id="cover-letter-section" class="premium-feature" style="display:none;">
-          <legend>Cover Letter Builder (Premium)</legend>
-          <label>Job Title / Position Applying For
-            <input type="text" id="coverJobTitle" placeholder="e.g. Sales Executive">
-          </label>
-          <label>Company Name
-            <input type="text" id="coverCompany" placeholder="e.g. CRDB Bank">
-          </label>
-          <label>Cover Letter Content
-            <textarea id="coverContent" rows="8" placeholder="Write or paste your cover letter here..."></textarea>
-          </label>
+        <fieldset id="cover-letter-section">
+          <legend>Cover Letter Builder</legend>
+          <label>Job Title<input type="text" id="coverJobTitle" placeholder="e.g. Sales Executive"></label>
+          <label>Company Name<input type="text" id="coverCompany" placeholder="e.g. CRDB Bank"></label>
+          <label>Cover Letter Content<textarea id="coverContent" rows="8" placeholder="Write or paste your cover letter..."></textarea></label>
+          <button type="button" id="suggest-cover" class="btn-secondary btn-sm">💡 Suggest cover letter</button>
           <button type="button" id="download-cover" class="btn-primary">Download Cover Letter PDF</button>
         </fieldset>
 
@@ -126,22 +133,19 @@
           <button type="button" id="download-pdf" class="btn-primary">Download CV PDF</button>
           <button type="button" id="save-cv" class="btn-secondary">Save Draft</button>
           <button type="button" id="load-cv" class="btn-secondary">Load Draft</button>
-          <button type="button" id="toggle-premium" class="btn-secondary">Toggle Premium (Demo)</button>
         </div>
       </form>
     </section>
 
     <section class="preview-section">
       <div class="preview-wrapper">
-        <div id="cv-preview" class="cv-document template-classic">
-          <!-- No watermark -->
-        </div>
+        <div id="cv-preview" class="cv-document template-classic"></div>
       </div>
     </section>
   </main>
 
   <footer class="app-footer">
-    <p><strong>AfriCV</strong> by <strong>KCL PLATFORM TZ</strong> • Built for East African job seekers • Free: Classic template • Premium: Modern & Minimal + Cover Letter</p>
+    <p><strong>AfriCV</strong> by <strong>KCL PLATFORM TZ</strong> • Built for East African job seekers</p>
   </footer>
 
   <script src="app.js"></script>
