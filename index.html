@@ -25,6 +25,7 @@
           <button type="button" id="btn-ats" class="btn-tool">ATS Score</button>
           <button type="button" id="btn-tailor" class="btn-tool">Job Tailor</button>
           <button type="button" id="btn-examples" class="btn-tool">Examples</button>
+          <button type="button" id="btn-linkedin" class="btn-tool">LinkedIn</button>
           <button type="button" id="btn-whatsapp" class="btn-tool">Share WhatsApp</button>
         </div>
 
@@ -53,6 +54,17 @@
             <button type="button" class="btn-secondary load-example" data-example="bank">Banking / Finance</button>
             <button type="button" class="btn-secondary load-example" data-example="teacher">Teacher / Education</button>
           </div>
+          <button type="button" class="btn-secondary close-panel">Close</button>
+        </div>
+
+        <div id="linkedin-panel" class="smart-panel" style="display:none;">
+          <h3>LinkedIn Profile Helpers</h3>
+          <p class="hint">Copy these into your LinkedIn profile.</p>
+          <label>Headline<textarea id="li-headline" rows="2" readonly></textarea></label>
+          <button type="button" id="copy-headline" class="btn-secondary btn-sm">Copy Headline</button>
+          <label style="margin-top:0.75rem;">About section<textarea id="li-about" rows="5" readonly></textarea></label>
+          <button type="button" id="copy-about" class="btn-secondary btn-sm">Copy About</button>
+          <button type="button" id="gen-linkedin" class="btn-primary" style="margin-top:0.5rem;">Generate from CV</button>
           <button type="button" class="btn-secondary close-panel">Close</button>
         </div>
 
@@ -131,8 +143,10 @@
 
         <div class="form-actions">
           <button type="button" id="download-pdf" class="btn-primary">Download CV PDF</button>
+          <button type="button" id="download-docx" class="btn-primary">Download DOCX</button>
           <button type="button" id="save-cv" class="btn-secondary">Save Draft</button>
           <button type="button" id="load-cv" class="btn-secondary">Load Draft</button>
+          <button type="button" id="clear-form" class="btn-secondary">Clear Form</button>
         </div>
       </form>
     </section>
